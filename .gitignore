@@ -1,0 +1,25 @@
+# Virtual Environment
+.venv/
+
+# Environment Variables
+.env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Recordings
+recordings/
+
+# Evidence
+evidence/
+
+# VS Code
+.vscode/
+
+# Model weights
+models/panns/*.pth
+
+# OS files
+.DS_Store
+Thumbs.db
