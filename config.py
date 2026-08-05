@@ -10,7 +10,8 @@ load_dotenv()
 
 AUDIO_SAMPLE_RATE = 16000
 CHANNELS = 1
-RECORD_SECONDS = 5
+# RECORD_SECONDS = 5
+CHUNK_DURATION = 3
 OUTPUT_AUDIO = "recordings/recording.wav"
 
 # ===========================
@@ -39,6 +40,7 @@ THREAT_SOUNDS = {
     "Explosion": 0.75,
     "Glass": 0.70,
     "Scream": 0.65,
+    "Silence": 0.02,
 }
 
 # ===========================

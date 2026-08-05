@@ -6,7 +6,7 @@ import config
 
 class AlertManager:
 
-    def send_alert(self, decision):
+    def send_alert(self, assessment):
 
         message = EmailMessage()
 
@@ -15,17 +15,19 @@ class AlertManager:
         message["To"] = config.EMAIL_RECEIVER
 
         message.set_content(
-            f"""Threat Detected
+f"""Threat Detected
 
-Label      : {decision["label"]}
+Time       : {assessment["timestamp"]}
 
-Confidence : {decision["confidence"]:.2f}
+Priority   : {assessment["priority"]}
 
-Threshold  : {decision["threshold"]:.2f}
+Score      : {assessment["score"]}
 
-Time       : {decision["timestamp"]}
+Categories : {", ".join(assessment["categories"])}
 
-Message    : {decision["message"]}
+Detected Events:
+
+{self.format_events(assessment["events"])}
 """
         )
 
@@ -48,4 +50,20 @@ Message    : {decision["message"]}
             print("Alert email sent successfully.")
 
         except Exception as error:
-            print(f"Failed to send alert email.\n{error}")
+
+            print(
+                f"Failed to send alert email.\n{error}"
+            )
+
+    def format_events(self, events):
+
+        text = ""
+
+        for event in events:
+
+            text += (
+                f"- {event['label']} "
+                f"(Confidence: {event['confidence']:.2f})\n"
+            )
+
+        return text

@@ -4,7 +4,7 @@ import soundfile as sf
 from config import (
     AUDIO_SAMPLE_RATE,
     CHANNELS,
-    RECORD_SECONDS,
+    CHUNK_DURATION,
     OUTPUT_AUDIO
 )
 
@@ -14,7 +14,7 @@ def record_audio():
     print("Recording started...")
 
     audio = sd.rec(
-        int(RECORD_SECONDS * AUDIO_SAMPLE_RATE),
+        int(CHUNK_DURATION * AUDIO_SAMPLE_RATE),
         samplerate=AUDIO_SAMPLE_RATE,
         channels=CHANNELS,
         dtype="float32"

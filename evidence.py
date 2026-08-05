@@ -7,28 +7,27 @@ import config
 
 class EvidenceManager:
 
-    def save(self, decision, audio_path):
+    def save(self, assessment, audio_path):
 
         # Convert timestamp into a Windows-safe folder name
         timestamp = (
-            decision["timestamp"]
+            assessment["timestamp"]
             .replace(":", "-")
             .replace(".", "-")
         )
 
-        # Create incident folder path
+        # Create incident folder
         incident_folder = (
             Path(config.EVIDENCE_FOLDER)
             / timestamp
         )
 
-        # Create the folder
         incident_folder.mkdir(
             parents=True,
             exist_ok=True
         )
 
-        # Copy the recorded audio
+        # Copy recorded audio
         destination = (
             incident_folder
             / "audio.wav"
@@ -39,22 +38,22 @@ class EvidenceManager:
             destination
         )
 
-        # Create metadata dictionary
+        # Metadata to be saved
         metadata = {
 
-            "timestamp": decision["timestamp"],
+            "timestamp": assessment["timestamp"],
 
-            "label": decision["label"],
+            "priority": assessment["priority"],
 
-            "confidence": decision["confidence"],
+            "score": assessment["score"],
 
-            "threshold": decision["threshold"],
+            "categories": assessment["categories"],
 
-            "message": decision["message"]
+            "events": assessment["events"]
 
         }
 
-        # Path for metadata.json
+        # metadata.json path
         metadata_path = (
             incident_folder
             / "metadata.json"
@@ -74,5 +73,5 @@ class EvidenceManager:
             )
 
         print(
-            f"Evidence saved successfully at {incident_folder}"
+            f"Evidence saved successfully at:\n{incident_folder}"
         )
