@@ -32,15 +32,24 @@ FMAX = 14000
 CLASSES_NUM = 527
 
 # ===========================
-# Threat Thresholds
+# Confidence Filter
 # ===========================
 
-THREAT_SOUNDS = {
-    "Gunshot": 0.80,
-    "Explosion": 0.75,
-    "Glass": 0.70,
-    "Scream": 0.65,
-    "Silence": 0.02,
+DEFAULT_CONFIDENCE_THRESHOLD = 0.10 # Thresholds will be calibrated in future versions.
+
+CONFIDENCE_OVERRIDES = {
+    "Gunshot, gunfire": 0.50,
+    "Explosion": 0.50,
+    "Scream": 0.50
+}
+
+CONTINUOUS_THRESHOLDS = {
+    "Gunshot, gunfire": 1,
+    "Explosion": 1,
+    "Scream": 2,
+    "Screaming": 2,
+    "Glass": 2,
+    "Speech": 5
 }
 
 # ===========================

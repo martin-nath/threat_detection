@@ -32,17 +32,11 @@ class ThreatAssessment:
                 "priority": "Medium"
             },
 
-            "Speech": {
-                "category": "Speech",
+            "Screaming": {
+                "category": "Human Distress",
                 "score": 8,
                 "priority": "High"
-            },
-
-            "Silence": {
-                "category": "Silence",
-                "score": 10,
-                "priority": "High"
-            }
+}
         }
 
         print(
@@ -54,14 +48,11 @@ class ThreatAssessment:
         assessment = {
 
             "timestamp": datetime.now().isoformat(),
-
             "score": 0,
-
             "priority": "Ignore",
-
             "events": [],
-
-            "categories": []
+            "categories": [],
+            "reasons": []
 
         }
 
@@ -74,7 +65,9 @@ class ThreatAssessment:
             if label in self.threat_database:
 
                 threat_info = self.threat_database[label]
-
+                assessment['reasons'].append(
+                    f"{label} detected ({confidence:.3f})"
+                )
                 assessment["score"] += threat_info["score"]
 
                 if (
@@ -85,6 +78,22 @@ class ThreatAssessment:
                     assessment["categories"].append(
                         threat_info["category"]
                     )
+
+                if "weapon" in assessment["categories"]:
+                    assessment['priority'] = 'Critical'
+                    assessment['reasons'].append("Weapon-related sound detected")
+
+                elif "Explosion" in assessment['categories']:
+                    assessment['priority'] = "critical"
+                    assessment['reasons'].append("Explosion detected")
+
+                elif "Human Distress" in assessment["categories"]:
+                    assessment["priority"] = "High"
+                    assessment["reasons"].append("Human distress sound detected.")
+
+                elif "Property Damage" in assessment['categoried']:
+                    assessment["priority"] = "Medium"
+                    assessment['reasons'].append("Property damage sound detected")
 
                 assessment["events"].append({
 

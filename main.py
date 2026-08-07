@@ -4,25 +4,24 @@ from threat_assessment import ThreatAssessment
 from decision_engine import DecisionEngine
 from evidence import EvidenceManager
 from alerts import AlertManager
+from confidence_filter import ConfidenceFilter
+from display import (
+    display_assessment,
+    display_decision
+)
+from monitor import ContinuousMonitor
 
 import os
-# import config
 
 
-# -------------------------
-# Initialize all modules
-# -------------------------
 
 classifier = AudioClassifier()
-
+confidenceFilter = ConfidenceFilter()
+continuousMonitor = ContinuousMonitor()
 threatAssessment = ThreatAssessment()
-
 decisionEngine = DecisionEngine()
-
 evidenceManager = EvidenceManager()
-
 alertManager = AlertManager()
-
 
 print("Monitoring started...")
 
@@ -31,63 +30,49 @@ try:
 
     while True:
 
-        # -------------------------
-        # Record audio
-        # -------------------------
 
         waveform, audio_path = record_audio()
 
-        # -------------------------
-        # Classify audio
-        # -------------------------
 
-        predictions = classifier.predict(
-            waveform
-        )
+        predictions = classifier.predict(waveform)
+
+        accepted_predictions, rejected_predictions = (confidenceFilter.filter(predictions))
+        continuousMonitor.update(accepted_predictions)
+        monitor_state = continuousMonitor.get_state()
+
+        print("\nMonitor State: ")
+
+        if monitor_state:
+            for label, count in monitor_state.items():
+                print(f"{label:<25}{count}")
+        else:
+                print("No events recorded.")
+
+        assessment = threatAssessment.assess(accepted_predictions)
 
         print("\nTop Predictions\n")
-
+        
         for prediction in predictions:
-
             print(
-
-                f"{prediction['label']:<25}"
-
-                f"{prediction['confidence']:.3f}"
-
+        f"{prediction['label']:<25}"
+        f"{prediction['confidence']:.3f}"
             )
-
-        # -------------------------
-        # Threat Assessment
-        # -------------------------
-
-        assessment = threatAssessment.assess(
-            predictions
-        )
-
-        # -------------------------
-        # Decision Making
-        # -------------------------
 
         decision = decisionEngine.decide(
             assessment
         )
+        
+        display_assessment(assessment)
+        display_decision(decision)
 
-        # -------------------------
-        # Debug Output
-        # -------------------------
+        print("\nReasons:")
 
-        print("\nAssessment")
+        if assessment["reasons"]:
+            for reason in assessment["reasons"]:
+                print(f"- {reason}")
+        else:
+            print("None")
 
-        print(assessment)
-
-        print("\nDecision")
-
-        print(decision)
-
-        # -------------------------
-        # Save Evidence
-        # -------------------------
 
         if decision["save_evidence"]:
 
@@ -96,31 +81,13 @@ try:
                 audio_path
             )
 
-        # -------------------------
-        # Send Alert
-        # -------------------------
 
         if decision["send_alert"]:
 
             alertManager.send_alert(
                 assessment
             )
-
-        # -------------------------
-        # No Threat
-        # -------------------------
-
-        if (
-            not decision["save_evidence"]
-            and
-            not decision["send_alert"]
-        ):
-
-            print("No threat detected.")
-
-        # -------------------------
-        # Delete temporary recording
-        # -------------------------
+        
 
         if os.path.exists(audio_path):
 
